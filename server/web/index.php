@@ -1,14 +1,9 @@
 <?php 
-
-
-
-
 require_once '../vendor/autoload.php';
 include 'class_game.php';
 include 'class_player.php';
 
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Debug\ErrorHandler;
 use Symfony\Component\Debug\ExceptionHandler;
 
@@ -59,8 +54,6 @@ $app->put('/create_game/{player_name}/{n_players}/{distance}',
     	$game->create($player, $n_players, $distance);    	
         $game_id = $game->get_id();  
         $response = Array('game_id' => $game->get_id());
-        unset($game);
-        unset($player);
         return $app->json($response, 201);
 });
 
@@ -73,13 +66,14 @@ $app->put('/join_game/{game_id}/{player_name}',
 			 */
 			$game = New Game($app['db'], $game_id);
 			if(!$game->exists()){
-				print("No exists");
 				return New Response('La sala no existe', 403);
 			}
 			$player = New Player($app['db'], $player_name);
 			$result = $game->join_player($player);
-			if(!$result){
+			if($result == -1){
 				return New Response('Ya ingresaste a la sala', 403);
+			}else if(!$result){
+				return New Response('La sala se encuentra llena', 403);
 			}
 			return New Response('Ingresaste correctamente', 201);
 		});
@@ -93,16 +87,14 @@ $app->get('/status_game/{game_id}',
          * La petición con http code 200
          * Recibe le parametro id de sala ($game_id)
          */
-        // Query get status game
-        $game_ready = True;
-        $player_list = Array();
-        $response = Array('player_list' => $player_list);
-        if($game_ready){            
-            return $app->json($response, 200);
-        }else{
-            return $app->json($response, 102);
-        }
-        
+    	$game = New Game($app['db'], $game_id);
+    	if(!$game->exists()){
+    		return New Response('La sala no existe', 403);
+    	}
+    	$game_status = $game->get_status();
+    	$player_list = $game->get_players();
+        $response = Array('game_status' => $game_status, 'player_list' => $player_list);
+        return $app->json($response, 200);        
     });
 
 $app->put('/start_game/{game_id}',
@@ -114,39 +106,93 @@ $app->put('/start_game/{game_id}',
          * Para todos los jugadores
          */
         // Query update status game_id ready
-        return new Response(201, 'Starting');
+    	$game = New Game($app['db'], $game_id);
+    	if(!$game->exists()){
+    		return New Response('La sala no existe', 403);
+    	}
+    	$game->start();    	
+    	return new Response('Starting', 201);
     });
 
 $app->put('/start_game_player/{game_id}/{player_name}/{datetime_sync}',
-    function($game_id, $player_name, $datatime_sync) use($app){
+		function($game_id, $player_name, $datetime_sync) use($app){
         /* 
          * Esta funcion se llama cuando un jugador inicia su partida 
          * Envia el valor de game_id, su nombre y información sobre el sincro-
          * nismo.
          */
         // Query update status game_id ready
-        return new Response(201, 'Starting');
+    	$game = New Game($app['db'], $game_id);
+    	if(!$game->exists()){
+    		return New Response('La sala no existe', 403);
+    	}
+    	if(!$game->get_status() == 4){
+    		return New Response('', 403);
+    	}
+    	$player = New Player($app['db'], $player_name);    	
+    	$game->player_start($player, $datetime_sync);
+        return new Response('start', 201);
     });
 
-$app->put('/add_data_player/{game_id}/{player_name}/
-    {datatime_sync}/{player_distance}/
-   {player_speed_max}/{player_speed_prom}',
+$app->put('/finish_game_player/{game_id}/{player_name}/{datetime_sync}',
+		function($game_id, $player_name, $datetime_sync) use($app){
+			/*
+			 * Esta funcion se llama cuando un jugador finaliza su partida
+			 * Envia el valor de game_id, su nombre y información sobre el sincro-
+			 * nismo.
+			 */
+			// Query update status game_id ready
+			$game = New Game($app['db'], $game_id);
+			if(!$game->exists()){
+				return New Response('La sala no existe', 403);
+			}
+			if(!$game->get_status() == 4){
+				return New Response('', 403);
+			}
+			$player = New Player($app['db'], $player_name);
+			$game->player_finish($player, $datetime_sync);
+			return new Response('end', 201);
+		});
+
+$app->put('/add_data_player/{game_id}/{player_name}/{player_datatime_sync}/{player_distance}/{player_speed_max}/{player_speed_prom}',
     function($game_id, $player_name, 
-        $datatime_sync, $player_dinstance, 
-        $player_speed_max, $player_speed_prom) use($app){
+    		$player_datatime_sync, $player_distance, 
+        	$player_speed_max, $player_speed_prom) use($app){
         /*
          * Esta funcion se llama cuando un jugador desea agregar informacion de
          * su estado de avance
          * Se retorna un json con la informacion de avance del resto de jugadores
          */
+		$game = New Game($app['db'], $game_id);
+        if(!$game->exists()){
+        	return New Response('La sala no existe', 403);
+        }
+        if(!$game->get_status() == 5){
+        	return New Response('', 403);
+        }
+        $player = New Player($app['db'], $player_name); 
         // Query insert data player
         // Query get last data others players
-        $response = Array(
-            Array('player_name' => 'X1', 'player_distance' => '', 
-                'player_speed_max' => '', 'player_speed_prom'),
-            Array('player_name' => 'X2', 'player_distance' => '',
-                'player_speed_max' => '', 'player_speed_prom'),
-            );
+        
+        $player->add_data($game_id, $player_datatime_sync, $player_distance, $player_speed_max);
+        $response = Array();
+        foreach ($game->get_players() as &$player_id){
+        	if($player_id != $player->get_id()){
+        		$other_player = New Player($app['db'], False, $player_id);
+        		$other_player_name = $other_player->get_name();
+        		$data = $other_player->get_data($game_id);
+        		$response[$player_id] = Array(
+        				'player_name' => $other_player_name,
+        				'player_distance' => 0.0,
+        				'player_speed_prom' => 0.0,
+        				'player_speed_max' => 0.0
+        				);
+        		if($data){
+        			$response[$player_id]['player_distance'] = $data['player_data_distance'];
+        			$response[$player_id]['player_speed_max'] = $data['player_data_speed_max'];
+        		}
+        	}      	
+        }
         return $app->json($response, 201);
     });
 
