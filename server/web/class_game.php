@@ -76,7 +76,7 @@ class Game extends Game_player_data{
 				'game_players_id' => json_encode(Array($player_id))
 				));
 		$this->game_id = $this->db->lastInsertId();
-		$this->set_data($distance, $num_players, $player_id, json_encode(Array($player_id)));
+		$this->load_data();
 		return $this->game_id;		
 	}
 	
