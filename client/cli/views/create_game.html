@@ -1,0 +1,22 @@
+<form class='bg-light'>
+  <div class="form-group row ">
+    <label for="number_of_players" class="col-sm-3 col-form-label">Number of players</label>
+    <div class="col-sm-9">
+       <select class="form-control" id='number_of_players' ng-model='create_game.number_of_players'>
+		   <option ng-repeat='option in [1,2,3,4,5,6]'>{{ option }}</option>
+	   </select>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="distance" class="col-sm-3 col-form-label">Distance KM</label>
+    <div class="col-sm-9">
+      <input class="form-control" type='number' id='distance' ng-model='create_game.distance' />
+    </div>
+  </div>
+  <div class='row'>
+    <button class="btn btn-success btn-lg mx-auto" ng-click='create_game()' type='submit'>Crete Game</button>
+    <button class="btn btn-danger btn-lg mx-auto" ng-click='go_home()' type='button'>Cancel</button>
+  </div>
+</form>
+<hr>
+<strong>{{ create_game.number_of_players }} - {{ create_game.distance }}</strong>

@@ -1,0 +1,39 @@
+body{
+	
+}
+
+nav{
+	margin-bottom: 15px !important;
+	-webkit-border-bottom-right-radius: 15px;
+	-webkit-border-bottom-left-radius: 15px;
+	-moz-border-radius-bottomright: 15px;
+	-moz-border-radius-bottomleft: 15px;
+	border-bottom-right-radius: 15px;
+	border-bottom-left-radius: 15px;
+}
+#content{
+	margin: 0 auto;
+	margin-top:0px;
+	width: 50%;
+}
+#downcount{
+    display: block;
+    left: 50%;
+    top: 50%;
+    position: absolute;    
+    z-index: 10;
+    padding: 35px;
+    font-size: 3em;
+    color: white;
+	border-radius: 15px;
+}
+
+#downcount-background{
+	position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 5;
+    opacity: 0.9;
+}
