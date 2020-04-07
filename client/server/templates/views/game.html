@@ -15,7 +15,7 @@
 			</span>
 		</div>
 		<div class='col-sm-2'>
-			<button class='btn btn-success btn-lg' ng-click='start_game()'>Start game</button>
+			<button class='btn btn-success btn-lg' ng-click='start_game()' ng-disabled="game.status != 2">Start game</button>
 		</div>
 		<br />
 	</div>

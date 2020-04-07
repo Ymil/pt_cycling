@@ -16,7 +16,7 @@ nav{
 	margin-top:0px;
 	width: 50%;
 }
-#downcount{
+.pt_cycling_box{
     display: block;
     left: 50%;
     top: 50%;
@@ -28,7 +28,7 @@ nav{
 	border-radius: 15px;
 }
 
-#downcount-background{
+#screen-background{
 	position: absolute;
     top: 0;
     left: 0;

@@ -1,3 +1,11 @@
+function gameServices(){
+	service = {
+		id: 0,
+		distance: 0,
+		players: {}
+	};
+	return service;
+}
 app = angular.module("pt_cycling", ["ngRoute", "ngStorage"]);
 app.config(function ($routeProvider, $localStorageProvider){
 	$routeProvider
@@ -22,39 +30,20 @@ app.config(function ($routeProvider, $localStorageProvider){
 	$localStorageProvider.get
 });
 app.controller("controller", 
-	["$scope", "$localStorage", "$location", "$interval", 
-	function($scope, $localStorage, $location, $interval){
-	$scope.$storage = $localStorage.$default({
-		'settings': {
-			user_name: '',
-			ip_server:  '',
-			bike_shot: {id: 26, name: 26}
-		}
-    });
-	$scope.settings = $scope.$storage.settings;
-	$scope.form = {};
-	$scope.form.bike_shot_options = [
-		{
-			id: 26, name: 26
-		},
-		{
-			id: 27.5, name: 27.5
-		},
-		{
-			id: 28, name: 28
-		},
-		{
-			id: 29, name: 29
-		}
-	];
+	["$scope", "$localStorage", "$location", "$interval", "$http",
+	function($scope, $localStorage, $location, $interval, $http){
+	$scope.game = {};
+	$scope.game.id = 0;
+	$scope.game.distance = 0;
+	$scope.game.players = {};
+	
+	$scope.data_create_game = {}
+	$scope.data_create_game.distance = 1;
+	$scope.data_create_game.number_of_players = 1;
+	
+	$scope.loading = {};
+	$scope.loading.active = false;
 
-	$scope.settings_copy = {};
-	angular.copy($scope.settings, $scope.settings_copy);
-	
-	$scope.create_game = {}
-	$scope.create_game.distance = 1;
-	$scope.create_game.number_of_players = 1;
-	
 	$scope.downcount = {
 		'value': 3,
 		'active': false,
@@ -76,15 +65,15 @@ app.controller("controller",
 			}
 		}
 	};
-	
-	$scope.save_settings = function(){
-		$scope.$storage.settings = $scope.settings_copy;
-		$scope.settings = $localStorage;
-		$scope.go_home();
-	};
-
+	$scope.game = {};
 	$scope.create_game = function (){
-		$scope.go_game();
+		$scope.loading.active = true;
+		$http.put("/create_game", $scope.data_create_game).then(function successCallback(response){
+			$scope.game = response.data;
+			$scope.loading.active = false;
+			$scope.go_game();
+		});
+		
 	};
 
 	$scope.join_game = function(){
@@ -103,8 +92,6 @@ app.controller("controller",
 		$location.path("/create_game");
 	};
 
-	
-
 	$scope.go_join_game = function (){
 		$location.path("/join_game");
 	};
@@ -112,5 +99,28 @@ app.controller("controller",
 	$scope.go_game = function (){
 		$location.path("/game");
 	}	
+	
+	$scope.$storage = $localStorage.$default({
+		'settings': {
+			user_name: '',
+			serial_port: '',
+			ip_server:  '',
+			bike_shot: 26
+		}
+    });
+
+	$http({
+	method: 'GET',
+	url: '/get_settings'
+	}).then(function (response) {
+		$scope.$storage.settings = response.data;
+		$scope.settings = $scope.$storage.settings;
+		if($scope.$storage.settings.user_name == ""){
+			$scope.go_settings();
+		}
+	});
+
+	
+
 }]);
 	

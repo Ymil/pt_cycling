@@ -13,3 +13,6 @@
     </ul>
   </div>
 </nav>
+<div id="screen-background" class="bg-secondary" ng-show="downcount.active || loading.active"></div>
+<div id="downcount" class='pt_cycling_box' class="bg-success" ng-show="downcount.active">{{ downcount.value }}</div>
+<div id="loading" class='pt_cycling_box' class="bg-success" ng-show="loading.active"><img src='static/img/ajax-loader.gif'></div>
