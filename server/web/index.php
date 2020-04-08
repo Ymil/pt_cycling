@@ -75,7 +75,8 @@ $app->put('/join_game/{game_id}/{player_name}',
 			}else if(!$result){
 				return New Response('La sala se encuentra llena', 403);
 			}
-			return New Response('Ingresaste correctamente', 201);
+			$response = Array('game_num_players' => $game.get_num_players(), "game_distance" => $game.get_distance());
+			return $app->json($response, 200);  
 		});
 
 $app->get('/status_game/{game_id}',
@@ -93,7 +94,24 @@ $app->get('/status_game/{game_id}',
     	}
     	$game_status = $game->get_status();
     	$player_list = $game->get_players();
-        $response = Array('game_status' => $game_status, 'player_list' => $player_list);
+        $response = Array('game_status' => $game_status, 'game_players' => Array());        
+        foreach ($game->get_players() as &$player_id){
+        	if($player_id != $player->get_id()){
+        		$other_player = New Player($app['db'], False, $player_id);
+        		$other_player_name = $other_player->get_name();
+        		$data = $other_player->get_data($game_id);
+        		$response['game_players'][$player_id] = Array(
+        				'player_name' => $other_player_name,
+        				'player_distance' => 0.0,
+        				'player_speed_prom' => 0.0,
+        				'player_speed_max' => 0.0
+        				);
+        		if($data){
+        			$response['game_players'][$player_id]['player_distance'] = $data['player_data_distance'];
+        			$response['game_players'][$player_id]['player_speed_max'] = $data['player_data_speed_max'];
+        		}
+        	}
+        }
         return $app->json($response, 200);        
     });
 
@@ -176,23 +194,6 @@ $app->put('/add_data_player/{game_id}/{player_name}/{player_datatime_sync}/{play
         
         $player->add_data($game_id, $player_datatime_sync, $player_distance, $player_speed_max);
         $response = Array();
-        foreach ($game->get_players() as &$player_id){
-        	if($player_id != $player->get_id()){
-        		$other_player = New Player($app['db'], False, $player_id);
-        		$other_player_name = $other_player->get_name();
-        		$data = $other_player->get_data($game_id);
-        		$response[$player_id] = Array(
-        				'player_name' => $other_player_name,
-        				'player_distance' => 0.0,
-        				'player_speed_prom' => 0.0,
-        				'player_speed_max' => 0.0
-        				);
-        		if($data){
-        			$response[$player_id]['player_distance'] = $data['player_data_distance'];
-        			$response[$player_id]['player_speed_max'] = $data['player_data_speed_max'];
-        		}
-        	}      	
-        }
         return $app->json($response, 201);
     });
 

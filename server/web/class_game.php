@@ -72,8 +72,7 @@ class Game extends Game_player_data{
 		$this->db->insert('game', Array(
 				'game_player_id_master' => $player_id,
 				'game_distance' => $distance,
-				'game_num_players' => $num_players,
-				'game_players_id' => json_encode(Array($player_id))
+				'game_num_players' => $num_players
 				));
 		$this->game_id = $this->db->lastInsertId();
 		$this->load_data();
@@ -168,6 +167,10 @@ class Game extends Game_player_data{
 		 * 6: finish
 		 */
 		return $this->game_status;
+	}
+	
+	function get_num_players(){
+		return $this->game_num_players;
 	}
 	
 	protected function change_status($status){
