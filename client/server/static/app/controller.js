@@ -32,13 +32,16 @@ app.config(function ($routeProvider, $localStorageProvider){
 app.controller("controller", 
 	["$scope", "$localStorage", "$location", "$interval", "$http",
 	function($scope, $localStorage, $location, $interval, $http){
+	$scope.flags = {};
 	$scope.game = {};
-	$scope.game.id = 0;
-	$scope.game.distance = 0;
-	$scope.game.players = {};
+	$scope.game.game_id = 0;
+	$scope.game.game_distance = 0;
+	$scope.game.upgradeable = {};
+	$scope.game.upgradeable.game_players = {}
+	$scope.game.upgradeable.game_status = 0;
 	
 	$scope.data_create_game = {}
-	$scope.data_create_game.distance = 1;
+	$scope.data_create_game.game_distance = 1;
 	$scope.data_create_game.number_of_players = 1;
 	
 	$scope.loading = {};
@@ -71,13 +74,20 @@ app.controller("controller",
 		$http.put("/create_game", $scope.data_create_game).then(function successCallback(response){
 			$scope.game = response.data;
 			$scope.loading.active = false;
-			$scope.go_game();
+			$scope.join_game();
 		});
 		
 	};
 
 	$scope.join_game = function(){
-		$scope.go_game();
+		$scope.loading.active = true;
+		$http.get("/join_game/"+$scope.game.game_id).then(function successCallback(response){
+			$scope.game.game_distance = response.data.game_distance;
+			$scope.game.game_num_players = response.data.game_num_players;
+			$scope.loading.active = false;
+			$scope.go_game();
+		});
+		
 	}
 
 	$scope.go_home = function(){
@@ -119,7 +129,7 @@ app.controller("controller",
 			$scope.go_settings();
 		}
 	});
-
+	
 	
 
 }]);

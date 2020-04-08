@@ -3,7 +3,7 @@
   <div class="form-group row ">
     <label for="number_of_players" class="col-sm-3 col-form-label" >Number of players</label>
     <div class="col-sm-9">
-       <select class="form-control" id='number_of_players' ng-model='data_create_game.number_of_players' ng-model="required" required>
+       <select class="form-control" id='number_of_players' ng-model='data_create_game.game_num_players' ng-model="required" required>
 		   <option ng-repeat='option in [1,2,3,4,5,6]'>{{ option }}</option>
 	   </select>
     </div>
@@ -11,7 +11,7 @@
   <div class="form-group row">
     <label for="distance" class="col-sm-3 col-form-label">Distance KM</label>
     <div class="col-sm-9">
-      <input class="form-control" type='number' id='distance' ng-model='data_create_game.distance' ng-model="required" required />
+      <input class="form-control" type='number' id='distance' ng-model='data_create_game.game_distance' ng-model="required" required />
     </div>
   </div>
   <div class='row'>
@@ -21,4 +21,4 @@
 </form>
 </div>
 <hr>
-<strong>{{ create_game.number_of_players }} - {{ create_game.distance }}</strong>
+<strong>{{ create_game.number_of_players }} - {{ create_game.game_distance }}</strong>

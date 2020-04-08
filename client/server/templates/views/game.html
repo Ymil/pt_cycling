@@ -7,7 +7,10 @@
 			</span>
 			-
 			<span>
-				Number of players: {{ game.number_of_players }}
+				Number of players: {{ game.game_num_players }}
+			</span>
+			<span>
+				Distance: {{ game.game_distance }} KM
 			</span>
 			-
 			<span>
@@ -15,23 +18,23 @@
 			</span>
 		</div>
 		<div class='col-sm-2'>
-			<button class='btn btn-success btn-lg' ng-click='start_game()' ng-disabled="game.status != 2">Start game</button>
+			<button class='btn btn-success btn-lg' ng-click='start_game()' ng-disabled="game.upgradeable.game_status != 2">Start game</button>
 		</div>
 		<br />
 	</div>
 	<div>
-		<div ng-repeat='(player_id, player) in game.players'>
-			<input class="form-control-range" type="range" min=0 max="{{ game.distance }}" value="{{ player.distance }}" step=.1 list="tickmarks">
+		<div ng-repeat='(player_id, player) in game.upgradeable.game_players'>
+			<input class="form-control-range" type="range" min=0 max="{{ game.game_distance }}" value="{{ player.player_distance }}" step=.1 list="tickmarks">
 			<div>
 				<span>Player id: {{ player_id }}</span>
 				-
-				<span>Player Name: {{ player.name | uppercase }}</span>
+				<span>Player Name: {{ player.player_name | uppercase }}</span>
 				-
-				<span>Distance: {{ player.distance | number:2}} KM</span>
+				<span>Distance: {{ player.player_distance | number:2}} KM</span>
 				-
-				<span>Speed: {{ player.speed | number:2}} KM/H</span>
+				<span>Speed: {{ player.player_speed_prom | number:2}} KM/H</span>
 				-
-				<span>Speed Max: {{ player.speed_max | number:2 }} KM/H</span>
+				<span>Speed Max: {{ player.player_speed_max | number:2 }} KM/H</span>
 			</div>
 		</div>
 	</div>
