@@ -70,17 +70,19 @@ $app->put('/join_game/{game_id}/{player_name}',
 			}
 			$player = New Player($app['db'], $player_name);
 			$result = $game->join_player($player);
+			if($result == true){
+				$response = Array('game_num_players' => $game->get_num_players(), "game_distance" => $game->get_distance());
+				return $app->json($response, 200);  
+			}
 			if($result == -1){
 				return New Response('Ya ingresaste a la sala', 403);
 			}else if(!$result){
 				return New Response('La sala se encuentra llena', 403);
 			}
-			$response = Array('game_num_players' => $game.get_num_players(), "game_distance" => $game.get_distance());
-			return $app->json($response, 200);  
 		});
 
-$app->get('/status_game/{game_id}',
-    function($game_id) use($app){
+$app->get('/status_game/{game_id}/{player_name}',
+		function($game_id, $player_name) use($app){
         /*
          * Esta función la llaman los usuarios que estas dentro de la sala
          * Para obtener información sobre el estado y el listado de jugadores
@@ -94,6 +96,7 @@ $app->get('/status_game/{game_id}',
     	}
     	$game_status = $game->get_status();
     	$player_list = $game->get_players();
+    	$player = New Player($app['db'], $player_name);
         $response = Array('game_status' => $game_status, 'game_players' => Array());        
         foreach ($game->get_players() as &$player_id){
         	if($player_id != $player->get_id()){
@@ -108,6 +111,7 @@ $app->get('/status_game/{game_id}',
         				);
         		if($data){
         			$response['game_players'][$player_id]['player_distance'] = $data['player_data_distance'];
+        			$response['game_players'][$player_id]['player_speed_prom'] = $data['player_data_speed_prom'];
         			$response['game_players'][$player_id]['player_speed_max'] = $data['player_data_speed_max'];
         		}
         	}
@@ -192,7 +196,7 @@ $app->put('/add_data_player/{game_id}/{player_name}/{player_datatime_sync}/{play
         // Query insert data player
         // Query get last data others players
         
-        $player->add_data($game_id, $player_datatime_sync, $player_distance, $player_speed_max);
+        $player->add_data($game_id, $player_datatime_sync, $player_distance, $player_speed_prom, $player_speed_max);
         $response = Array();
         return $app->json($response, 201);
     });

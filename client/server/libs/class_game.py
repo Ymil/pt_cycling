@@ -1,5 +1,7 @@
+import requests
 from datetime import datetime
-class Game():
+from libs.class_remoteServerController import remoteServerController
+class Game(remoteServerController):
     def __init__(self, player = None):
         self.player = player
         self.__reset()
@@ -11,6 +13,7 @@ class Game():
         self.time_start = None
         self.num_players = None
         self.distance = None
+        self.server = self.player.get_server()
         self.players_data = {}        
         self._serialize_reponse = {}
     
@@ -53,31 +56,35 @@ class Game():
         if(self.get_num_players() == 1):
             #Return local game id 0
             self.set_id(0)
-            self._serialize_reponse = {'game_id': self.get_id()}
-            return True
+            response = {'game_id': self.get_id()}
+            return response
         elif(self.get_num_players() > 1):
-            #Call http request to server
             self.type = 1
-            self._serialize_reponse = {}
-            pass
+            response = self.put('create_game/{}/{}/{}'.format(self.player.get_name(), self.get_num_players(), self.get_distance()))
+            self.set_id(response['game_id'])
+            #Call http request to server
+            return response
         return False    
     
-    def join_player(self, game_id):
-        if(self.type):
-            #http request
-            #self.set_num_players(data['game_num_players'])
-            #self.set_distance
-            pass
+    def join_player(self, game_id):                
+        if(not game_id == 0):
+            self.type = 1
+            response = self.put('join_game/{}/{}'.format(game_id, self.player.get_name()))
+            self.set_id(game_id)            
         else:
             self.set_status(2)           
-            return {'game_num_players': self.get_num_players(), 'game_distance': self.get_distance()}
+            response = {'game_num_players': self.get_num_players(), 'game_distance': self.get_distance()}
+        self.player.set_game_id(game_id)
+        return response
     
     def get_status_game(self):
         response = {'game_id': self.get_id(), 'game_status': self.get_status(), 'game_players': {}}        
         if(self.type):
-            #http request
-            pass
+            response = self.get('status_game/{}/{}'.format(self.get_id(), self.player.get_name()))
+            self.set_status(response['game_status'])     
         #Append data local user
+        if response['game_players'] == []:
+            response['game_players'] = {}
         response['game_players']['0'] = self.player.get_data()
         if(self.time_start):
             response['game_time'] = str(datetime.now() - self.time_start)
@@ -85,26 +92,24 @@ class Game():
     
     def start(self):
         if(self.type):
-            #http request
-            pass
+            response = self.put('start_game/{}'.format(self.get_id()))
+            return response
         else:
             self.set_status(4)
             return True
     
     def start_player(self):
         if(self.type):
-            #http request
-            pass
+            response = self.put('start_game_player/{}/{}/{}'.format(self.get_id(), self.player.get_name(), str(datetime.now())))
         else:
             self.set_status(5)
-            self.time_start = datetime.now()
+        self.time_start = datetime.now()
         self.player.run()
         return True
     
     def end_player(self):
         if(self.type):
-            #http request
-            pass
+            response = self.put('end_game_player/{}/{}/{}'.format(self.get_id(), self.player.get_name(), str(datetime.now())))
         else:
             self.set_status(6)
         self.player.stop()

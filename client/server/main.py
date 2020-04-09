@@ -39,8 +39,9 @@ def set_settings():
 @app.route('/create_game', methods=['PUT'])
 def create_game():
     data = request.json
-    if(game.create(data)):        
-        return jsonify(game.get_serializate_data())
+    response = game.create(data)
+    if(response):        
+        return jsonify(response)
     return make_response('', 400)
 
 

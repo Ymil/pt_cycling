@@ -13,6 +13,7 @@ parser.add_argument('-speed', default=10, type=float, help='Modo estable: Establ
 parser.add_argument('-speedMin', default=0, type=float, help='Modo random: Establece la velocidad minima')
 parser.add_argument('-speedMax', default=100, type=float, help='Modo random: Establece la velocidad maxima')
 parser.add_argument('-shotBike', default='29', type=str, help='Indica el rodado de la bici [26/27.5/25.29]')
+parser.add_argument('-com', default='COM2', type=str, help='Indica el rodado de la bici [26/27.5/25.29]')
 args = parser.parse_args()
 
 print(args)
@@ -46,7 +47,7 @@ elif(args.speedMode == 'random'):
 
   
     
-s2 = serial.Serial('COM2', 9600, timeout=1)
+s2 = serial.Serial(args.com, 9600, timeout=1)
 time_last = 0
 time_start = 0
 millis = 0
