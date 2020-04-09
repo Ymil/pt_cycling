@@ -1,12 +1,15 @@
 class Game():
     def __init__(self, player = None):
+        self.player = player
+        self.__reset()
+    
+    def __reset(self):
         self.type = 0 # 0 local 1 remote
         self.status = None
         self.id = None
         self.num_players = None
         self.distance = None
-        self.players_data = {}
-        self.player = player
+        self.players_data = {}        
         self._serialize_reponse = {}
     
     def set_status(self, status):
@@ -41,6 +44,7 @@ class Game():
         return self._serialize_reponse     
     
     def create(self, data):
+        self.__reset()
         self.player.set_master()
         self.set_num_players(data['game_num_players'])
         self.set_distance(data['game_distance'])  

@@ -118,19 +118,19 @@ app.controller("controller",
 			bike_shot: 26
 		}
     });
-
-	$http({
-	method: 'GET',
-	url: '/get_settings'
-	}).then(function (response) {
-		$scope.$storage.settings = response.data;
-		$scope.settings = $scope.$storage.settings;
-		if($scope.$storage.settings.user_name == ""){
-			$scope.go_settings();
-		}
-	});
-	
-	
+	$scope.get_settings = function(){ 
+		$http({
+		method: 'GET',
+		url: '/get_settings'
+		}).then(function (response) {
+			$scope.$storage.settings = response.data;
+			$scope.settings = $scope.$storage.settings;
+			if($scope.$storage.settings.user_name == ""){
+				$scope.go_settings();
+			}
+		});
+	}
+	$scope.get_settings();
 
 }]);
 	

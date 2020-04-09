@@ -34,10 +34,9 @@ app.controller('settings',
 			$scope.settings = $localStorage.settings;
 			$http.put("/set_settings", $scope.settings).then(function (){
 				$scope.loading.active = false;
+				$scope.get_settings();
 				$scope.go_home();
-			});
-
-			
+			});			
 		}
 }
 ]);
