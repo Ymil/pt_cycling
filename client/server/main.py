@@ -4,19 +4,26 @@ from libs.class_player import Player
 from libs.class_game import Game
 import os
 from flask.helpers import make_response
-app = Flask(__name__, root_path='../cli')
+app = Flask(__name__, root_path='../gui', template_folder='../gui')
 
 player = Player()
 game = Game(player)
 @app.route('/')
 def index():
-    return render_template("index.html")
+    return render_template("app.html")
 
 @app.route('/<path:template>.html')
-def send_template(template):
+def send_template_html(template):
     #Fix AngularJS
-    template_file = '{}.html'.format(os.path.join('templates',template))
+    template_file = '{}.html'.format(os.path.join('',template))
     return send_file(template_file)
+
+@app.route('/app/<path:template>.js')
+def send_template_js(template):
+    #Fix AngularJS
+    template_file = '{}.js'.format(os.path.join('app',template))
+    return send_file(template_file)
+
 
 @app.route('/get_settings')
 def get_settings():
