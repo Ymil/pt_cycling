@@ -47,7 +47,7 @@ class Player():
         print('Get data')
         if self._status:
             data = self._serial_control.get_data()
-            self._distance += data[0]
+            self._distance = data[0]
             self._speed = data[1]
             self._speed_max = data[3]
         return {

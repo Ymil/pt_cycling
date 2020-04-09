@@ -1,3 +1,4 @@
+from datetime import datetime
 class Game():
     def __init__(self, player = None):
         self.player = player
@@ -7,6 +8,7 @@ class Game():
         self.type = 0 # 0 local 1 remote
         self.status = None
         self.id = None
+        self.time_start = None
         self.num_players = None
         self.distance = None
         self.players_data = {}        
@@ -77,6 +79,8 @@ class Game():
             pass
         #Append data local user
         response['game_players']['0'] = self.player.get_data()
+        if(self.time_start):
+            response['game_time'] = str(datetime.now() - self.time_start)
         return response
     
     def start(self):
@@ -93,6 +97,7 @@ class Game():
             pass
         else:
             self.set_status(5)
+            self.time_start = datetime.now()
         self.player.run()
         return True
     
