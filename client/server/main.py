@@ -4,7 +4,7 @@ from libs.class_player import Player
 from libs.class_game import Game
 import os
 from flask.helpers import make_response
-app = Flask(__name__)
+app = Flask(__name__, root_path='../cli')
 
 player = Player()
 game = Game(player)
