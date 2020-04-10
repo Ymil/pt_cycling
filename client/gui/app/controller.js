@@ -7,6 +7,21 @@ function gameServices(){
 	return service;
 }
 app = angular.module("pt_cycling", ["ngRoute", "ngStorage"]);
+
+app.filter('orderObjectBy', function() {
+  return function(items, field, reverse) {
+    var filtered = [];
+    angular.forEach(items, function(item) {
+      filtered.push(item);
+    });
+    filtered.sort(function (a, b) {
+      return (a[field] > b[field] ? 1 : -1);
+    });
+    if(reverse) filtered.reverse();
+    return filtered;
+  };
+});
+
 app.config(function ($routeProvider, $localStorageProvider){
 	$routeProvider
 		.when("/home",{
@@ -36,6 +51,7 @@ app.controller("controller",
 	$scope.game = {};
 	$scope.game.game_id = 0;
 	$scope.game.game_distance = 0;
+	$scope.game.game_players = {};
 	$scope.game.upgradeable = {};
 	$scope.game.upgradeable.game_players = {}
 	$scope.game.upgradeable.game_status = 0;

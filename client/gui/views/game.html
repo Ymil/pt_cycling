@@ -1,41 +1,62 @@
 
 <div ng-controller='game'>
-	<div class='row align-middle'>
-		<div class='col-sm-10'>
-			<span>
-				IP Server: {{ settings.ip_server }}
-			</span>
-			-
-			<span>
-				Number of players: {{ game.game_num_players }}
-			</span>
-			<span>
-				Distance: {{ game.game_distance }} KM
-			</span>
-			-
-			<span>
-				Time of game: {{ game.upgradeable.game_time }}
-			</span>
+	<div class='row '>
+		<div class='col-sm-5'>
+			<ul class="list-group">
+				<li class="list-group-item">Game ID: {{ game.game_id }}</li>
+				<li class="list-group-item">Server: {{ settings.ip_server }}</li>
+			</ul>
 		</div>
-		<div class='col-sm-2'>
-			<button class='btn btn-success btn-lg' ng-click='start_game()' ng-disabled="game.upgradeable.game_status != 2">Start game</button>
+		<div class='col-sm-5'>
+			<ul class="list-group">
+				<li class="list-group-item">Distance: {{ game.game_distance }} KM</li>
+				<li class="list-group-item">Number of players: {{ game.game_num_players }}</li>
+			</ul>
+		</div>
+		<div class='col-sm-2 align-middle'>
+			<button class='btn btn-success btn-lg ' ng-click='start_game()' ng-disabled="game.upgradeable.game_status != 2">Start game</button>
 		</div>
 		<br />
 	</div>
+	<div class='text-center m-2'>
+		<span class="border border-light rounded-bottom bg-dark text-white p-2" style='font-size: 1.5em'>
+			<svg class="bi bi-clock" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+			<path fill-rule="evenodd" d="M8 15A7 7 0 108 1a7 7 0 000 14zm8-7A8 8 0 110 8a8 8 0 0116 0z" clip-rule="evenodd"/>
+			<path fill-rule="evenodd" d="M7.5 3a.5.5 0 01.5.5v5.21l3.248 1.856a.5.5 0 01-.496.868l-3.5-2A.5.5 0 017 9V3.5a.5.5 0 01.5-.5z" clip-rule="evenodd"/>
+			</svg>
+			 {{ game.upgradeable.game_time }}
+		</span>
+	</div>
+	<hr />
 	<div>
-		<div ng-repeat='(player_id, player) in game.upgradeable.game_players'>
-			<input class="form-control-range" type="range" min=0 max="{{ game.game_distance }}" value="{{ player.player_distance }}" step=.1 list="tickmarks">
-			<div>
-				<span>Player id: {{ player_id }}</span>
-				-
-				<span>Player Name: {{ player.player_name | uppercase }}</span>
-				-
-				<span>Distance: {{ player.player_distance | number:2}} KM</span>
-				-
-				<span>Speed: {{ player.player_speed_prom | number:2}} KM/H</span>
-				-
-				<span>Speed Max: {{ player.player_speed_max | number:2 }} KM/H</span>
-			</div>
-		</div>
+		<table class="table table-bordered">
+			<thead>
+				<tr>
+					<th scope="col">Pos</th>
+					<th scope="col">ID</th>
+					<th scope="col">Name</th>
+					<th scope="col">Distance</th>
+					<th scope="col">Speed</th>
+					<th scope="col">Speed Max</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat-start="(player_id, player) in game.game_players | orderObjectBy:player.player_distance:true">
+					<th scope='row' rowspan="3" class='align-middle'>#{{ $index + 1}}</th>
+				</tr>
+				<tr>					
+					<td colspan=5>
+						<input class="form-control-range" type="range" min=0 max="{{ game.game_distance }}" value="{{ player.player_distance }}" step=.1 list="tickmarks">
+					</td>
+				</tr>
+				<tr ng-repeat-end>					
+					<td>{{ player_id }}</td>
+					<td>{{ player.player_name | uppercase }}</td>
+					<td>{{ player.player_distance | number:2}} KM</td>
+					<td>{{ player.player_speed_prom | number:2}} KM/H</td>
+					<td>{{ player.player_speed_max | number:2 }} KM/H</td>
+				</tr>				
+			</tbody>
+		</table>
 	</div>
 </div>
