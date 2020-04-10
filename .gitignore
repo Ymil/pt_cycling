@@ -1,3 +1,7 @@
 *~
 *.autosave
 *.pyc
+.poject
+.pydevproject
+.settings
+
