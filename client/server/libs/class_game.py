@@ -66,7 +66,8 @@ class Game(remoteServerController):
             return response
         return False    
     
-    def join_player(self, game_id):                
+    def join_player(self, game_id):
+        #self.__reset()
         if(not game_id == 0):
             self.type = 1
             response = self.put('join_game/{}/{}'.format(game_id, self.player.get_name()))
@@ -75,6 +76,7 @@ class Game(remoteServerController):
             self.set_status(2)           
             response = {'game_num_players': self.get_num_players(), 'game_distance': self.get_distance()}
         self.player.set_game_id(game_id)
+        self.player.configure()
         return response
     
     def get_status_game(self):
@@ -104,7 +106,7 @@ class Game(remoteServerController):
         else:
             self.set_status(5)
         self.time_start = datetime.now()
-        self.player.run()
+        self.player.start()
         return True
     
     def end_player(self):

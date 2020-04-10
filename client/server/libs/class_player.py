@@ -12,20 +12,23 @@ class Player(remoteServerController):
         self._status = 0
         self.server = ''
         self._t_update_data = None
-        self._reset()
+        
         self._serial_control = None
         self._game_id = None
         self._settings = {}
         self.get_settings()
+        self._reset()
     
     def _reset(self):
         if(not self._t_update_data == None):
             self.stop()
-        
+        if(self._status == 1):
+            self._serial_control.stop()
         self._distance = 0.0
         self._speed = 0.0
         self._speed_prom = 0.0
         self._speed_max = 0.0
+        self._status = 0
     
     def set_game_id(self, game_id):
         self._game_id = game_id
@@ -39,10 +42,14 @@ class Player(remoteServerController):
             self.get_game_id(), self.get_name(), str(datetime.now()),
             self._distance, self._speed, self._speed_prom, self._speed_max))
     
-    def run(self):        
-        self._serial_control = serialControl(self._settings['serial_port'], self._settings['bike_shot'])        
+    def configure(self):
+        if(self._status == 1):
+            self._reset()
+        if self._serial_control == None:
+            self._serial_control = serialControl(self._settings['serial_port'], self._settings['bike_shot'])     
+    
+    def start(self):    
         self._serial_control.start()
-        self._reset()
         self._status = 1       
         #self.update_data()
     
@@ -50,7 +57,6 @@ class Player(remoteServerController):
         #self._t_update_data.cancel()
         self._status = 0
         self._serial_control.stop()
-        del self._serial_control
         
     def set_master(self):
         self._master = True
@@ -58,9 +64,7 @@ class Player(remoteServerController):
     def get_name(self):
         return self._settings['player_name']
     
-    def get_data(self):        
-        
-            
+    def get_data(self):     
         if self._status:
             if(not self._game_id == None or not self._game_id == 0):
                 Thread(target=self.remote_add_data).start()

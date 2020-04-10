@@ -4,7 +4,15 @@ from libs.class_player import Player
 from libs.class_game import Game
 import os
 from flask.helpers import make_response
-app = Flask(__name__, root_path='../gui', template_folder='../gui')
+
+print(os.path.basename(os.getcwd()))
+if os.path.basename(os.getcwd()) == 'server':
+    gui_path = '../gui'
+else:
+    gui_path = os.path.join(os.getcwd(), 'gui')
+app = Flask(__name__, root_path=gui_path, template_folder=gui_path)
+print(os.getcwd())
+print(gui_path)
 
 player = Player()
 game = Game(player)
@@ -84,4 +92,8 @@ def get_setting_serial_ports():
     return jsonify(ports)
 
 if __name__ == "__main__":
-    app.run()
+    import sys
+    port = 5000
+    if len(sys.argv[1]) > 1:
+        port = int(sys.argv[1])
+    app.run(port=port)

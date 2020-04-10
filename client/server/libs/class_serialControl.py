@@ -27,6 +27,7 @@ class serialControl:
         self.speed = 0.0
         self.speed_prom = 0.0
         self.speed_max = 0.0
+        self.tcontroller_running = True
         
     def controller(self):
         self._reset()
@@ -39,10 +40,8 @@ class serialControl:
                 self.data.append(value)
             except:
                 print("Error read value")
-                
-    def __del__(self):
         self._close_serial_port()
-    
+                
     def _open_serial_port(self):
         if self.serialHandler == None:
             self.serialHandler = serial.Serial(self.serialPort, 9600)
@@ -50,12 +49,14 @@ class serialControl:
     def _close_serial_port(self):
         if self.serialHandler:
             self.serialHandler.close()
+            self.serialHandler = None
         
     def start(self):
+        self._open_serial_port()
         self.tcontroller_running = True
         self.tcontroller.start()
         
-    def stop(self):
+    def stop(self):        
         self.tcontroller_running = False
     
     def processor(self):
