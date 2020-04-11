@@ -106,11 +106,13 @@ $app->get('/status_game/{game_id}/{player_name}',
         		$response['game_players'][$player_id] = Array(
         				'player_name' => $other_player_name,
         				'player_distance' => 0.0,
+        				'player_speed' => 0.0,
         				'player_speed_prom' => 0.0,
         				'player_speed_max' => 0.0
         				);
         		if($data){
         			$response['game_players'][$player_id]['player_distance'] = $data['player_data_distance'];
+        			$response['game_players'][$player_id]['player_speed'] = $data['player_data_speed'];
         			$response['game_players'][$player_id]['player_speed_prom'] = $data['player_data_speed_prom'];
         			$response['game_players'][$player_id]['player_speed_max'] = $data['player_data_speed_max'];
         		}
@@ -176,10 +178,10 @@ $app->put('/finish_game_player/{game_id}/{player_name}/{datetime_sync}',
 			return new Response('end', 201);
 		});
 
-$app->put('/add_data_player/{game_id}/{player_name}/{player_datatime_sync}/{player_distance}/{player_speed_max}/{player_speed_prom}',
+$app->put('/add_data_player/{game_id}/{player_name}/{player_datatime_sync}/{player_distance}/{player_speed}/{player_speed_prom}/{player_speed_max}',
     function($game_id, $player_name, 
     		$player_datatime_sync, $player_distance, 
-        	$player_speed_max, $player_speed_prom) use($app){
+    		$player_speed, $player_speed_prom,$player_speed_max) use($app){
         /*
          * Esta funcion se llama cuando un jugador desea agregar informacion de
          * su estado de avance
@@ -196,7 +198,7 @@ $app->put('/add_data_player/{game_id}/{player_name}/{player_datatime_sync}/{play
         // Query insert data player
         // Query get last data others players
         
-        $player->add_data($game_id, $player_datatime_sync, $player_distance, $player_speed_prom, $player_speed_max);
+        $player->add_data($game_id, $player_datatime_sync, $player_distance, $player_speed, $player_speed_prom, $player_speed_max);
         $response = Array();
         return $app->json($response, 201);
     });

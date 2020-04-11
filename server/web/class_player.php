@@ -11,13 +11,14 @@ class Player_data{
 		return $result;
 	}
 	
-	function add_data($game_id, $date, $distance, $speed_prom,$speed_max){
+	function add_data($game_id, $date, $distance, $speed, $speed_prom,$speed_max){
 		/*
 		 * $array_data = Array('player_data_date' => '', 'player_data_distance' => 0.0, 'player_data_speed_max' => 0.0);
 		 */
 		$array_data = Array(
 				'player_data_date_player' => $date, 
-				'player_data_distance' => floatval($distance), 
+				'player_data_distance' => floatval($distance),
+				'player_data_speed' => floatval($speed),
 				'player_data_speed_max' => floatval($speed_max),
 				'player_data_speed_prom' => floatval($speed_prom)
 		);
