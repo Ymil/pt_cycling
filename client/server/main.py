@@ -1,3 +1,4 @@
+import sys
 from flask import Flask
 from flask import render_template, json, jsonify, send_file, request
 from libs.class_player import Player
@@ -14,7 +15,10 @@ app = Flask(__name__, root_path=gui_path, template_folder=gui_path)
 print(os.getcwd())
 print(gui_path)
 
-player = Player()
+if(len(sys.argv) > 2):
+    player = Player(sys.argv[2])
+else:
+    player = Player()
 game = Game(player)
 @app.route('/')
 def index():
@@ -92,7 +96,7 @@ def get_setting_serial_ports():
     return jsonify(ports)
 
 if __name__ == "__main__":
-    import sys
+    
     port = 5000
     if len(sys.argv[1]) > 1:
         port = int(sys.argv[1])

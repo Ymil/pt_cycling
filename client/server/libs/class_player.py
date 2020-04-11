@@ -6,13 +6,12 @@ import random
 import json
 
 class Player(remoteServerController):
-    __settings_file__ = 'user_config.json'
-    def __init__(self):
+    def __init__(self, settings_file="user_config.json"):
         self._master = False
         self._status = 0
         self.server = ''
         self._t_update_data = None
-        
+        self.settings_file = settings_file
         self._serial_control = None
         self._game_id = None
         self._settings = {}
@@ -38,7 +37,7 @@ class Player(remoteServerController):
     
     def remote_add_data(self):
         #/add_data_player/{game_id}/{player_name}/{player_datatime_sync}/{player_distance}/{player_speed_max}/{player_speed_prom}
-        self.put('add_data_player/{}/{}/{}/{}/{}/{}'.format(
+        self.put('add_data_player/{}/{}/{}/{}/{}/{}/{}'.format(
             self.get_game_id(), self.get_name(), str(datetime.now()),
             self._distance, self._speed, self._speed_prom, self._speed_max))
     
@@ -75,7 +74,8 @@ class Player(remoteServerController):
             self._speed_max = data[3]
         return {
              'player_name': self.get_name(), 'player_distance': self._distance,
-             'player_speed_prom': self._speed, 'player_speed_max': self._speed_max
+             'player_speed': self._speed, 'player_speed_prom': self._speed_prom, 
+             'player_speed_max': self._speed_max
         }
     
     def update_data(self):
@@ -89,11 +89,11 @@ class Player(remoteServerController):
         
     
     def get_settings(self):
-        self._settings = json.load(open(self.__settings_file__))
+        self._settings = json.load(open(self.settings_file))
         self.server = self._settings['ip_server']
         return self._settings
     
     def set_settings(self, data):
-        with open(self.__settings_file__, 'w') as outf:
+        with open(self.settings_file, 'w') as outf:
             json.dump(data, outf)
         self.get_settings()

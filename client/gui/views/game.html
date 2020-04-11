@@ -40,20 +40,20 @@
 					<th scope="col">Speed Max</th>
 				</tr>
 			</thead>
-			<tbody>
-				<tr ng-repeat-start="(player_id, player) in game.game_players | orderObjectBy:player.player_distance:true">
+			<tbody>				
+				<tr ng-repeat-start="player in game.game_players" ng-class="{true: 'bg-primary text-white' }[ player.player_id == 0]">
 					<th scope='row' rowspan="3" class='align-middle'>#{{ $index + 1}}</th>
-				</tr>
-				<tr>					
+				</tr>				
+				<tr ng-class="{true: 'bg-primary text-white' }[ player.player_id == 0]">					
 					<td colspan=5>
 						<input class="form-control-range" type="range" min=0 max="{{ game.game_distance }}" value="{{ player.player_distance }}" step=.1 list="tickmarks">
 					</td>
 				</tr>
-				<tr ng-repeat-end>					
-					<td>{{ player_id }}</td>
+				<tr ng-class="{true: 'bg-primary text-white' }[ player.player_id == 0]" ng-repeat-end>					
+					<td>{{ player.player_id }}</td>
 					<td>{{ player.player_name | uppercase }}</td>
 					<td>{{ player.player_distance | number:2}} KM</td>
-					<td>{{ player.player_speed_prom | number:2}} KM/H</td>
+					<td>{{ player.player_speed | number:2}} KM/H</td>
 					<td>{{ player.player_speed_max | number:2 }} KM/H</td>
 				</tr>				
 			</tbody>

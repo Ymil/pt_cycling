@@ -10,7 +10,7 @@ bike_shot_perimeters = {
 }
 class serialControl:
     def __init__(self, serialPort, bikeShot):   
-        self.tcontroller = Thread(target=self.controller)
+        
         self.tcontroller_running = True
         self.serialPort = serialPort
         self.bikeShot = bikeShot
@@ -21,6 +21,7 @@ class serialControl:
         self._last_valid_data = 0
     
     def _reset(self):
+        self.tcontroller = Thread(target=self.controller)
         self.data = []
         self.get_counts = 0
         self.distance = 0.0
@@ -31,6 +32,7 @@ class serialControl:
         
     def controller(self):
         self._reset()
+        self.serialHandler.reset_input_buffer()
         while (self.tcontroller_running):
             try:
                 value = self.serialHandler.readline()
@@ -79,7 +81,7 @@ class serialControl:
             print("No data")
             self.speed = 0.0
         if(self.get_counts > 0):
-            self.speed_prom = (self.speed_prom + self.speed) / self.get_counts
+            self.speed_prom = (self.speed_prom + self.speed) / 2
         if(self.speed > self.speed_max):
             self.speed_max = self.speed
             

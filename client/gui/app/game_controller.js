@@ -54,8 +54,17 @@ app.controller('game',
 		$scope.$watch("game.upgradeable.game_players", function(newVal,oldVal){
 			$scope.game.game_players = Object.keys($scope.game.upgradeable.game_players)
 				.map(function(key) {
-					return $scope.game.upgradeable.game_players[key];
+					var rtr = $scope.game.upgradeable.game_players[key];
+					rtr.player_id = key;
+					return rtr;
 				});
+			$scope.game.game_players = $scope.game.game_players.sort(function compare(kv1, kv2) {
+			// This comparison function has 3 return cases:
+			// - Negative number: kv1 should be placed BEFORE kv2
+			// - Positive number: kv1 should be placed AFTER kv2
+			// - Zero: they are equal, any order is ok between these 2 items
+			return (parseFloat(kv1['player_distance']) < parseFloat(kv2['player_distance'])  ? 1 : -1);
+			})
 			if($scope.game.upgradeable.game_status == 5 && !$scope.flags.end_game){
 				if(newVal['0']['player_distance'] >= $scope.game.game_distance){
 					$http.get("/end_game_player");
