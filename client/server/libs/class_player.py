@@ -65,7 +65,7 @@ class Player(remoteServerController):
     
     def get_data(self):     
         if self._status:
-            if(not self._game_id == None or not self._game_id == 0):
+            if(not self._game_id == None and not self._game_id == 0):
                 Thread(target=self.remote_add_data).start()
             data = self._serial_control.get_data()
             self._distance = data[0]

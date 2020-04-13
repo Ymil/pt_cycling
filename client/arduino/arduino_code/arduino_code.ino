@@ -4,6 +4,10 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(2), interruptCount, RISING);
 }
 
+void loop(){
+  
+}
+
 const int timeThreshold = 100;
 long start_time, actual_time = 0;
 
